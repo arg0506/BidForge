@@ -1,0 +1,6 @@
+{
+  "name": "BidForge",
+  "description": "A premium real-time Web3 auction platform with live bidding, wallet integration, and interactive smart contract simulators.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
