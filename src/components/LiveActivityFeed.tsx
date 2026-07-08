@@ -18,7 +18,7 @@ import {
   Check
 } from 'lucide-react';
 import { useWeb3 } from '../context/Web3Context';
-import { AUCTION_MANAGER_ABI } from '../lib/contractArtifact';
+import { AUCTION_MANAGER_ABI } from '../lib/auctionContractData';
 
 interface ActivityLog {
   id: string;

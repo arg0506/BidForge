@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { ethers } from 'ethers';
 import toast from 'react-hot-toast';
 import { Auction, BidHistoryItem, Transaction, VirtualAccount, Web3ContextType, SmartBid } from '../types';
-import { AUCTION_MANAGER_ABI, AUCTION_MANAGER_BYTECODE } from '../lib/contractArtifact';
+import { AUCTION_MANAGER_ABI, AUCTION_MANAGER_BYTECODE } from '../lib/auctionContractData';
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
 

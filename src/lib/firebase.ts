@@ -10,27 +10,18 @@ import {
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Safely load Firebase configuration from JSON or from environment variables (for production Vercel builds)
-let firebaseConfig: any = {
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "",
-};
+import firebaseConfigLocal from '../../firebase-applet-config.json';
 
-try {
-  // Try importing the local file dynamically. This prevents Vercel build failure if the JSON file is untracked/missing.
-  const configModule = await import('../../firebase-applet-config.json');
-  const localConfig = configModule.default || configModule;
-  if (localConfig && localConfig.projectId) {
-    firebaseConfig = { ...firebaseConfig, ...localConfig };
-  }
-} catch (e) {
-  console.warn("Could not load local firebase-applet-config.json. Using environment variables as fallback.", e);
-}
+// Safely load Firebase configuration from JSON or from environment variables (for production Vercel builds)
+const firebaseConfig = {
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || firebaseConfigLocal.projectId || "",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || firebaseConfigLocal.appId || "",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || firebaseConfigLocal.apiKey || "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfigLocal.authDomain || "",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || firebaseConfigLocal.storageBucket || "",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || firebaseConfigLocal.messagingSenderId || "",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || firebaseConfigLocal.measurementId || "",
+};
 
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
