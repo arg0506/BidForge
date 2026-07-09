@@ -1,11 +1,9 @@
 {
-  "projectId": "gen-lang-client-0677309845",
-  "appId": "1:495394948986:web:e2e375399bfd1e2589b8c3",
-  "apiKey": "AIzaSyCNicshhTJ2b-p8hyd2HBqfDlZ_xj_gx9Q",
-  "authDomain": "gen-lang-client-0677309845.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-bidforge-ccbc59b5-e6e9-4cf5-8b53-3b07066fef98",
-  "storageBucket": "gen-lang-client-0677309845.firebasestorage.app",
-  "messagingSenderId": "495394948986",
-  "measurementId": "",
-  "oAuthClientId": "495394948986-fodpu3o44f709ssd7s55tq2vv8ub1oqr.apps.googleusercontent.com"
+  "projectId": "bidforge-c3f00",
+  "appId": "1:189146830330:web:bf04b4481a6531fa1e4043",
+  "apiKey": "AIzaSyDKriUTVtyvRixxpwLTixWowUPxvBF_Ld4",
+  "authDomain": "bidforge-c3f00.firebaseapp.com",
+  "storageBucket": "bidforge-c3f00.firebasestorage.app",
+  "messagingSenderId": "189146830330",
+  "measurementId": "G-Y978DX90NH"
 }

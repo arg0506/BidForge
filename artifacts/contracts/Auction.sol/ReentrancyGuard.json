@@ -1,0 +1,13 @@
+{
+  "_format": "hh3-artifact-1",
+  "contractName": "ReentrancyGuard",
+  "sourceName": "contracts/Auction.sol",
+  "abi": [],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "immutableReferences": {},
+  "inputSourceName": "project/contracts/Auction.sol",
+  "buildInfoId": "solc-0_8_20-659dbf2b635101c662e9b49e5bc7acf4bde767ae"
+}

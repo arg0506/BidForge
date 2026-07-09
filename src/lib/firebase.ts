@@ -9,6 +9,7 @@ import {
   User as FirebaseUser
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
 
 import firebaseConfigLocal from '../../firebase-applet-config.json';
 
@@ -28,6 +29,18 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Initialize Analytics safely (only runs in browser environment if supported)
+let analytics: Analytics | null = null;
+if (typeof window !== 'undefined') {
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  }).catch((err) => {
+    console.warn("Analytics not supported or failed to initialize:", err);
+  });
+}
+
 // Auth Providers
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
@@ -43,6 +56,7 @@ export {
   app,
   auth,
   db,
+  analytics,
   googleProvider,
   githubProvider,
   signInWithPopup,

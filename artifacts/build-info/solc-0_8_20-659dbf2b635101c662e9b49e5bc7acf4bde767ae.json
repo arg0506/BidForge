@@ -1,0 +1,46 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_20-659dbf2b635101c662e9b49e5bc7acf4bde767ae",
+  "solcVersion": "0.8.20",
+  "solcLongVersion": "0.8.20+commit.a1b79de6",
+  "compilerType": "solc",
+  "userSourceNameMap": {
+    "contracts/Auction.sol": "project/contracts/Auction.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "shanghai",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/Auction.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\n/**\n * @dev Contract module that helps prevent reentrant calls to a function.\n */\nabstract contract ReentrancyGuard {\n    uint256 private constant _NOT_ENTERED = 1;\n    uint256 private constant _ENTERED = 2;\n    uint256 private _status;\n\n    constructor() {\n        _status = _NOT_ENTERED;\n    }\n\n    modifier nonReentrant() {\n        require(_status != _ENTERED, \"ReentrancyGuard: reentrant call\");\n        _status = _ENTERED;\n        _;\n        _status = _NOT_ENTERED;\n    }\n}\n\n/**\n * @dev Contract module which provides a basic access control mechanism, where\n * there is an account (an owner) that can be granted exclusive access to\n * specific functions.\n */\nabstract contract Ownable {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    constructor() {\n        _owner = msg.sender;\n        emit OwnershipTransferred(address(0), msg.sender);\n    }\n\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    modifier onlyOwner() {\n        require(owner() == msg.sender, \"Ownable: caller is not the owner\");\n        _;\n    }\n\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        emit OwnershipTransferred(_owner, newOwner);\n        _owner = newOwner;\n    }\n}\n\n/**\n * @title BidForge Auction Smart Contract\n * @notice Manages decentralized real-time English auctions with bidding, refunds, and withdrawals.\n */\ncontract AuctionManager is ReentrancyGuard, Ownable {\n    \n    struct Auction {\n        uint256 auctionId;\n        address payable seller;\n        string title;\n        string description;\n        string imageUri;\n        uint256 startingPrice;\n        uint256 highestBid;\n        address highestBidder;\n        uint256 endTime;\n        bool active;\n        bool ended;\n    }\n\n    // Counter for auction IDs\n    uint256 private _auctionIdCounter;\n\n    // Mapping from auction ID to Auction struct\n    mapping(uint256 => Auction) public auctions;\n\n    // Mapping to track refundable bids for users (pull payments pattern)\n    mapping(address => uint256) public pendingReturns;\n\n    // Events as required by the DApp specifications\n    event AuctionCreated(\n        uint256 indexed auctionId,\n        address indexed seller,\n        string title,\n        uint256 startingPrice,\n        uint256 endTime\n    );\n    event BidPlaced(\n        uint256 indexed auctionId,\n        address indexed bidder,\n        uint256 amount\n    );\n    event AuctionEnded(\n        uint256 indexed auctionId,\n        address winner,\n        uint256 highestBid\n    );\n    event FundsWithdrawn(\n        address indexed withdrawer,\n        uint256 amount\n    );\n\n    /**\n     * @notice Creates a new auction\n     * @param _title The title of the auction\n     * @param _description Detailed description of the auction item\n     * @param _imageUri Link or IPFS URI of the item's image\n     * @param _startingPrice The initial minimum bid price in wei\n     * @param _duration The length of the auction in seconds\n     */\n    function createAuction(\n        string calldata _title,\n        string calldata _description,\n        string calldata _imageUri,\n        uint256 _startingPrice,\n        uint256 _duration\n    ) external returns (uint256) {\n        require(bytes(_title).length > 0, \"Title cannot be empty\");\n        require(_startingPrice > 0, \"Starting price must be > 0\");\n        require(_duration >= 60, \"Duration must be at least 1 minute\");\n\n        _auctionIdCounter++;\n        uint256 newAuctionId = _auctionIdCounter;\n        uint256 calculatedEndTime = block.timestamp + _duration;\n\n        auctions[newAuctionId] = Auction({\n            auctionId: newAuctionId,\n            seller: payable(msg.sender),\n            title: _title,\n            description: _description,\n            imageUri: _imageUri,\n            startingPrice: _startingPrice,\n            highestBid: 0,\n            highestBidder: address(0),\n            endTime: calculatedEndTime,\n            active: true,\n            ended: false\n        });\n\n        emit AuctionCreated(\n            newAuctionId,\n            msg.sender,\n            _title,\n            _startingPrice,\n            calculatedEndTime\n        );\n\n        return newAuctionId;\n    }\n\n    /**\n     * @notice Places a bid on an active auction\n     * @param _auctionId The ID of the target auction\n     */\n    function placeBid(uint256 _auctionId) external payable nonReentrant {\n        Auction storage auction = auctions[_auctionId];\n        \n        // Validation checks\n        require(auction.active, \"Auction is not active\");\n        require(block.timestamp < auction.endTime, \"Auction has ended\");\n        require(msg.sender != auction.seller, \"Seller cannot bid on own auction\");\n        \n        uint256 minimumBid = auction.highestBid == 0 ? auction.startingPrice : auction.highestBid;\n        if (auction.highestBid == 0) {\n            require(msg.value >= minimumBid, \"Bid must be at least starting price\");\n        } else {\n            require(msg.value > minimumBid, \"Bid must be higher than current highest bid\");\n        }\n\n        // If there was a previous highest bidder, credit their bid amount to their returns balance\n        if (auction.highestBidder != address(0)) {\n            pendingReturns[auction.highestBidder] += auction.highestBid;\n        }\n\n        // Update auction state\n        auction.highestBidder = msg.sender;\n        auction.highestBid = msg.value;\n\n        emit BidPlaced(_auctionId, msg.sender, msg.value);\n    }\n\n    /**\n     * @notice Ends an auction. Can be called by anyone once the end time is passed.\n     * @param _auctionId The ID of the auction to finalize\n     */\n    function endAuction(uint256 _auctionId) external nonReentrant {\n        Auction storage auction = auctions[_auctionId];\n\n        require(auction.active, \"Auction is not active or already ended\");\n        require(block.timestamp >= auction.endTime, \"Auction duration has not elapsed\");\n        require(!auction.ended, \"Auction already finalized\");\n\n        // Set state before transfer (Checks-Effects-Interactions pattern)\n        auction.ended = true;\n        auction.active = false;\n\n        uint256 finalPayout = auction.highestBid;\n        address payable seller = auction.seller;\n        address winner = auction.highestBidder;\n\n        emit AuctionEnded(_auctionId, winner, finalPayout);\n\n        // If there was a highest bid, transfer the funds to the seller\n        if (finalPayout > 0 && winner != address(0)) {\n            (bool success, ) = seller.call{value: finalPayout}(\"\");\n            require(success, \"Transfer of final payout to seller failed\");\n        }\n    }\n\n    /**\n     * @notice Withdraws refundable bids (pull-payment pattern)\n     */\n    function withdraw() external nonReentrant returns (bool) {\n        uint256 amount = pendingReturns[msg.sender];\n        require(amount > 0, \"No refundable balance found\");\n\n        // Zero out balance before transferring to prevent reentrancy\n        pendingReturns[msg.sender] = 0;\n\n        (bool success, ) = payable(msg.sender).call{value: amount}(\"\");\n        require(success, \"Withdrawal transfer failed\");\n\n        emit FundsWithdrawn(msg.sender, amount);\n        return true;\n    }\n\n    /**\n     * @notice Get current total count of auctions created\n     */\n    function getAuctionCount() external view returns (uint256) {\n        return _auctionIdCounter;\n    }\n}\n"
+      }
+    }
+  }
+}
