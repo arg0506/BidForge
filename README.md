@@ -1,16 +1,7 @@
 # BidForge: Decentralized Real-Time English Auction Protocol on Stellar (Soroban)
 
 BidForge is an ultra-premium, production-ready decentralized English Auction DApp designed for real-time Web3 physical collectibles, virtual node licenses, and digital assets. It has been fully migrated to the **Stellar (Soroban)** smart contract framework. It features responsive 60 FPS motion transitions, a dual-mode wallet bridge (supporting the official **Freighter Wallet** extension and an immersive in-browser **Virtual Soroban Sandbox**), and secure Rust smart contracts leveraging the pull-payments design.
- <p align="center">
 
-![License](https://img.shields.io/github/license/USERNAME/BidForge?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/USERNAME/BidForge?style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/USERNAME/BidForge?style=for-the-badge)
-![Rust](https://img.shields.io/badge/Rust-Soroban-orange?style=for-the-badge)
-![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge)
-
-</p>
 
 ## 🚀 Key Features
 
