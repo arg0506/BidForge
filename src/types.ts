@@ -58,7 +58,7 @@ export interface Web3ContextType {
   contractAddress: string;
   
   // Real or Virtual Actions
-  connectWallet: (walletType: 'metamask' | 'rabby' | 'coinbase' | 'virtual') => Promise<void>;
+  connectWallet: (walletType: 'metamask' | 'rabby' | 'coinbase' | 'virtual' | 'freighter') => Promise<void>;
   disconnectWallet: () => void;
   switchAccount: (address: string) => void;
   requestFaucet: () => Promise<void>;

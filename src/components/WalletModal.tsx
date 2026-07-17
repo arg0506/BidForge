@@ -13,7 +13,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => 
 
   if (!isOpen) return null;
 
-  const handleConnect = async (walletType: 'metamask' | 'rabby' | 'coinbase' | 'virtual') => {
+  const handleConnect = async (walletType: 'metamask' | 'rabby' | 'coinbase' | 'virtual' | 'freighter') => {
     try {
       await connectWallet(walletType);
       onClose();
@@ -90,67 +90,27 @@ export const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => 
             </div>
           </button>
 
-          {/* MetaMask */}
+          {/* Freighter Wallet */}
           <button
-            onClick={() => handleConnect('metamask')}
+            onClick={() => handleConnect('freighter')}
             className="w-full rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 p-4 text-left transition-all duration-300 hover:border-indigo-500/30 group"
           >
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#E2761B]/10 p-2 text-white">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 p-2 text-white shrink-0">
                 <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" 
-                  alt="MetaMask" 
+                  src="https://raw.githubusercontent.com/stellar/freighter-api/master/docs/assets/freighter-logo.svg" 
+                  alt="Freighter Wallet" 
                   className="h-8 w-8 object-contain"
-                />
-              </div>
-              <div>
-                <h4 className="font-semibold text-white group-hover:text-indigo-400 transition-colors">MetaMask</h4>
-                <p className="text-xs text-gray-400 mt-0.5">Connect via Chrome/Firefox browser extension</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Rabby */}
-          <button
-            onClick={() => handleConnect('rabby')}
-            className="w-full rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 p-4 text-left transition-all duration-300 hover:border-indigo-500/30 group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 p-2">
-                <img 
-                  src="https://rabby.io/assets/images/logo.png" 
-                  alt="Rabby Wallet" 
-                  className="h-7 w-7 rounded-md object-contain"
                   onError={(e) => {
-                    // Fallback to simple wallet icon if image fails
+                    // Fallback to wallet icon if logo fails to load
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-                <Wallet className="h-6 w-6 text-blue-400" />
+                <Wallet className="h-6 w-6 text-indigo-400" />
               </div>
               <div>
-                <h4 className="font-semibold text-white group-hover:text-indigo-400 transition-colors">Rabby Wallet</h4>
-                <p className="text-xs text-gray-400 mt-0.5">The game-changing Web3 wallet for Ethereum dapps</p>
-              </div>
-            </div>
-          </button>
-
-          {/* Coinbase Wallet */}
-          <button
-            onClick={() => handleConnect('coinbase')}
-            className="w-full rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 p-4 text-left transition-all duration-300 hover:border-indigo-500/30 group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600/10 p-2">
-                <img 
-                  src="https://avatars.githubusercontent.com/u/1806509?s=200&v=4" 
-                  alt="Coinbase" 
-                  className="h-7 w-7 rounded-md object-contain"
-                />
-              </div>
-              <div>
-                <h4 className="font-semibold text-white group-hover:text-indigo-400 transition-colors">Coinbase Wallet</h4>
-                <p className="text-xs text-gray-400 mt-0.5">Connect securely using Coinbase mobile or extension</p>
+                <h4 className="font-semibold text-white group-hover:text-indigo-400 transition-colors">Freighter Wallet</h4>
+                <p className="text-xs text-gray-400 mt-0.5">Stellar's premier browser extension for Soroban dApps</p>
               </div>
             </div>
           </button>
