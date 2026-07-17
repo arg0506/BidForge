@@ -2,6 +2,7 @@
 
 BidForge is an ultra-premium, production-ready decentralized English Auction DApp designed for real-time Web3 physical collectibles, virtual node licenses, and digital assets. It has been fully migrated to the **Stellar (Soroban)** smart contract framework. It features responsive 60 FPS motion transitions, a dual-mode wallet bridge (supporting the official **Freighter Wallet** extension and an immersive in-browser **Virtual Soroban Sandbox**), and secure Rust smart contracts leveraging the pull-payments design.
 
+---
 
 ## 🚀 Key Features
 

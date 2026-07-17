@@ -3,7 +3,9 @@ import toast from 'react-hot-toast';
 import { 
   isConnected as isFreighterConnected, 
   getAddress as getFreighterAddress, 
-  getNetwork as getFreighterNetwork 
+  getNetwork as getFreighterNetwork,
+  isAllowed as isFreighterAllowed,
+  setAllowed as setFreighterAllowed
 } from '@stellar/freighter-api';
 import { Auction, BidHistoryItem, Transaction, VirtualAccount, Web3ContextType, SmartBid } from '../types';
 
@@ -244,17 +246,20 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       const isConnRes = await isFreighterConnected();
       const connected = isConnRes && isConnRes.isConnected;
       if (connected) {
-        const addrRes = await getFreighterAddress();
-        const pubKey = addrRes && addrRes.address;
-        if (pubKey) {
-          setIsVirtual(false);
-          setAccount(pubKey);
-          setIsConnected(true);
-          setBalance("1500.00");
-          const netRes = await getFreighterNetwork();
-          const net = netRes && netRes.network;
-          setNetworkName(net || "Stellar Futurenet");
-          setChainId(3);
+        const isAllowedRes = await isFreighterAllowed();
+        if (isAllowedRes && isAllowedRes.isAllowed) {
+          const addrRes = await getFreighterAddress();
+          const pubKey = addrRes && addrRes.address;
+          if (pubKey) {
+            setIsVirtual(false);
+            setAccount(pubKey);
+            setIsConnected(true);
+            setBalance("1500.00");
+            const netRes = await getFreighterNetwork();
+            const net = netRes && netRes.network;
+            setNetworkName(net || "Stellar Futurenet");
+            setChainId(3);
+          }
         }
       }
     } catch (err) {
@@ -285,6 +290,20 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!freighterOk) {
         toast.error("Freighter Wallet is not installed or blocked. Install it from freighter.app or select Virtual Sandbox!");
         return;
+      }
+
+      // Check if site is allowed by the wallet, otherwise request user authorization
+      const isAllowedRes = await isFreighterAllowed();
+      const allowed = isAllowedRes && isAllowedRes.isAllowed;
+      if (!allowed) {
+        toast.loading("Prompting Freighter Wallet connection...", { id: "freighter-conn" });
+        const setAllowedRes = await setFreighterAllowed();
+        const accessGranted = setAllowedRes && setAllowedRes.isAllowed;
+        toast.dismiss("freighter-conn");
+        if (!accessGranted) {
+          toast.error("Freighter Wallet access was rejected or cancelled.");
+          return;
+        }
       }
 
       const addrRes = await getFreighterAddress();
